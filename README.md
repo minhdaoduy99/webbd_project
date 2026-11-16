@@ -35,15 +35,26 @@
 
 ---
 
-### ĐỨC (FRONTEND ADMIN - GIAO DIỆN QUẢN TRỊ)
-*Nhánh làm việc:* Tạo nhánh `feature/admin-dashboard` từ `develop`.
-- **Nhiệm vụ 1:** Dựng trang Quản trị tại đường dẫn `/admin` có thanh Sidebar bên trái: Dashboard, Quản lý sản phẩm, Quản lý đơn hàng.
-- **Nhiệm vụ 2:** Dựng bảng Table hiển thị danh sách sản phẩm và đơn hàng (khuyên dùng thư viện UI có sẵn như Shadcn UI / Flowbite).
-- **Nhiệm vụ 3:** Tạo trang Đăng nhập riêng cho Admin.
-- **Lưu ý quan trọng:** Khi gọi các API quản trị, bắt buộc phải đính kèm Token trong Header:
-  `headers: { 'Authorization': 'Bearer ' + token }`
+### ĐỨC (FRONTEND ADMIN - GIAO DIỆN QUẢN TRỊ & MỞ RỘNG API SẢN PHẨM)
 
----
+- **Nhánh làm việc:** `feature/admin-dashboard` và `feature/storefront-filter` (tách từ `develop`).
+- **Các tính năng đã hoàn thành & vị trí file:**
+  1. **Đăng nhập Admin & Phân quyền bảo mật (`/admin/login`):**
+     - Giao diện đăng nhập riêng cho quản trị viên: `frontend/src/app/admin/login/page.tsx`
+     - Kiểm tra quyền `ROLE_ADMIN`, chặn tài khoản khách hàng truy cập trái phép: `frontend/src/app/admin/layout.tsx`
+     - Tự động đính kèm Header `Authorization: Bearer <token>` cho mọi API quản trị: `frontend/src/lib/api.ts`
+  2. **Trang Tổng quan Dashboard (`/admin`):**
+     - Kết nối API thật thống kê Tổng sản phẩm, Đơn hàng chờ xử lý và Doanh thu tháng: `frontend/src/app/admin/page.tsx`
+  3. **Quản lý Sản phẩm & Khuyến mãi (`/admin/products` & `/admin/products/new`):**
+     - Thanh điều hướng Danh mục & Thương hiệu phong cách SoccerStore, thanh tìm kiếm/lọc đa tiêu chí (hãng, size, loại mặt sân, khoảng giá, sắp xếp) trên 1 hàng: `frontend/src/app/admin/products/page.tsx`
+     - Tính năng **Giảm giá (%)** tự động tính giá sau giảm và hiển thị nhãn khuyến mãi trên bảng sản phẩm: `frontend/src/app/admin/products/page.tsx`, `frontend/src/app/admin/products/new/page.tsx`
+     - Form thêm sản phẩm mới kèm upload ảnh và bảng chỉnh sửa thông tin, quản lý size/trạng thái hết hàng: `frontend/src/app/admin/products/new/page.tsx`, `frontend/src/app/admin/products/page.tsx`
+  4. **Quản lý Đơn hàng (`/admin/orders`):**
+     - Bảng theo dõi danh sách đơn hàng và cập nhật trạng thái (`PENDING`, `SHIPPING`, `DELIVERED`): `frontend/src/app/admin/orders/page.tsx`
+  5. **Tối ưu giao diện & Bổ sung Backend hỗ trợ:**
+     - Cấu hình phông chữ tiếng Việt `Be Vietnam Pro`: `frontend/src/app/layout.tsx`
+     - Bổ sung trường `discount_percent` và logic tính `salePrice` ở Backend/Database: `Product.java`, `ProductCardDTO.java`, `AdminProductController.java`, `StorefrontController.java`
+
 
 ## 3. TÀI KHOẢN MẪU CÓ SẴN ĐỂ CẢ NHÓM TEST
 - **Tài khoản Admin:** `admin@gmail.com` / Mật khẩu: `123456`

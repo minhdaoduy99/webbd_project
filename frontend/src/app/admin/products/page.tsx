@@ -24,6 +24,8 @@ interface ProductItem {
   brandName: string;
   category: string;
   price: number;
+  discountPercent: number;
+  salePrice: number;
   image: string;
   sizes: string[];
   outOfStockSizes: string[];
@@ -46,6 +48,7 @@ interface ProductEditForm {
   brandId: number;
   categoryId: number;
   basePrice: number;
+  discountPercent: number;
   thumbnailUrl: string;
   variants: VariantEdit[];
 }
@@ -132,6 +135,8 @@ export default function ProductsPage() {
           brandName: p.brandName || "Khác",
           category: p.categoryName,
           price: Number(p.basePrice),
+          discountPercent: Number(p.discountPercent ?? 0),
+          salePrice: Number(p.salePrice ?? p.basePrice),
           image: p.thumbnailUrl || "",
           sizes: Array.isArray(p.availableSizes) ? p.availableSizes : [],
           outOfStockSizes: Array.isArray(p.outOfStockSizes) ? p.outOfStockSizes : [],
@@ -243,24 +248,7 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="p-6 space-y-5">
-      {/* Tiêu đề & Nút thêm mới */}
-      <div className="flex flex-wrap justify-between items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Danh Sách Sản Phẩm</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Đang xem: <span className="font-semibold text-gray-800">{selectedCategory.name}</span> ({products.length} sản phẩm) •{" "}
-            <span className="text-amber-700">Ấn vào sản phẩm để chỉnh sửa size & trạng thái hết hàng</span>
-          </p>
-        </div>
-        <Link
-          href="/admin/products/new"
-          className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition"
-        >
-          + Thêm sản phẩm mới
-        </Link>
-      </div>
-
+    <div>
       {/* Thanh phân mục Danh mục & Thương hiệu */}
       <div
         className="bg-zinc-900 text-zinc-100 rounded-xl px-4 flex flex-wrap items-center gap-1 sm:gap-5 text-sm font-medium relative shadow-sm"
@@ -373,20 +361,40 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      <div className="p-6 space-y-5">
+      {/* Tiêu đề & Nút thêm mới */}
+      <div className="flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Danh Sách Sản Phẩm</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Đang xem: <span className="font-semibold text-gray-800">{selectedCategory.name}</span> ({products.length} sản phẩm) •{" "}
+            <span className="text-amber-700">Ấn vào sản phẩm để chỉnh sửa size & trạng thái hết hàng</span>
+          </p>
+        </div>
+        <Link
+          href="/admin/products/new"
+          className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition"
+        >
+          + Thêm sản phẩm mới
+        </Link>
+      </div>
+
+      
+
       {/* Thanh Bộ Lọc Chi Tiết */}
-      <div className="bg-white p-3.5 rounded-xl shadow-sm border flex flex-wrap items-center gap-3">
+      <div className="bg-white p-3 rounded-xl shadow-sm border flex flex-nowrap items-center gap-2 overflow-x-auto">
         <input
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="Tìm theo tên sản phẩm..."
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-800 w-56 focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm text-gray-800 w-44 shrink-0 focus:outline-none focus:border-black"
         />
 
         <select
           value={selectedBrandId}
           onChange={(e) => setSelectedBrandId(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-700 bg-white shrink-0 focus:outline-none focus:border-black"
         >
           <option value="">Hãng: Tất cả</option>
           {brands.map((b) => (
@@ -399,7 +407,7 @@ export default function ProductsPage() {
         <select
           value={selectedSize}
           onChange={(e) => setSelectedSize(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-700 bg-white shrink-0 focus:outline-none focus:border-black"
         >
           <option value="">Size: Tất cả</option>
           {SIZES.map((sz) => (
@@ -412,7 +420,7 @@ export default function ProductsPage() {
         <select
           value={selectedGround}
           onChange={(e) => setSelectedGround(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-700 bg-white shrink-0 focus:outline-none focus:border-black"
         >
           <option value="">Loại mặt sân: Tất cả</option>
           {GROUND_TYPES.map((g) => (
@@ -425,7 +433,7 @@ export default function ProductsPage() {
         <select
           value={priceIndex}
           onChange={(e) => setPriceIndex(Number(e.target.value))}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-gray-700 bg-white shrink-0 focus:outline-none focus:border-black"
         >
           {PRICE_RANGES.map((r, idx) => (
             <option key={idx} value={idx}>
@@ -437,7 +445,7 @@ export default function ProductsPage() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white ml-auto focus:outline-none focus:border-black"
+          className="border border-gray-300 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 bg-white shrink-0 ml-auto focus:outline-none focus:border-black"
         >
           <option value="newest">Mới nhất</option>
           <option value="price_asc">Giá: Thấp → Cao</option>
@@ -544,9 +552,25 @@ export default function ProductsPage() {
                       )}
                     </div>
                   </td>
-                  <td className="py-3 px-4 font-semibold text-gray-800 whitespace-nowrap">
-                    {Number(item.price).toLocaleString("vi-VN")} ₫
-                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap">
+                  {item.discountPercent > 0 ? (
+                    <div>
+                      <div className="font-bold text-red-600">
+                        {Number(item.salePrice).toLocaleString("vi-VN")} đ
+                        <span className="ml-1.5 text-[11px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold">
+                          -{item.discountPercent}%
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-400 line-through">
+                        {Number(item.price).toLocaleString("vi-VN")} đ
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="font-semibold text-gray-800">
+                      {Number(item.price).toLocaleString("vi-VN")} đ
+                    </span>
+                  )}
+                </td>
                   <td className="py-3 px-4">
                     {item.stock > 0 ? (
                       <span className="text-gray-700 font-medium">{item.stock}</span>
@@ -655,16 +679,36 @@ export default function ProductsPage() {
                 </div>
 
                 <div>
-                  <label className="block font-medium text-gray-700 mb-1">Giá bán (VNĐ)</label>
-                  <input
-                    type="number"
-                    value={editingProduct.basePrice}
-                    onChange={(e) =>
-                      setEditingProduct({ ...editingProduct, basePrice: Number(e.target.value) })
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900"
-                  />
-                </div>
+                <label className="block font-medium text-gray-700 mb-1">Giá gốc (VNĐ)</label>
+                <input
+                  type="number"
+                  value={editingProduct.basePrice}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, basePrice: Number(e.target.value) })
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700 mb-1">Giảm giá (%)</label>
+                <select
+                  value={editingProduct.discountPercent ?? 0}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, discountPercent: Number(e.target.value) })
+                  }
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 bg-white"
+                >
+                  {[0, 5, 10, 15, 20, 25, 30, 40, 50].map((pct) => (
+                    <option key={pct} value={pct}>
+                      {pct === 0 ? "Không giảm (0%)" : `Giảm ${pct}%`}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-emerald-700 font-semibold mt-1">
+                  Giá sau giảm: {Math.round(Number(editingProduct.basePrice) * (100 - (editingProduct.discountPercent ?? 0)) / 100).toLocaleString("vi-VN")} đ
+                </p>
+              </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">Link hình ảnh</label>
@@ -890,6 +934,7 @@ export default function ProductsPage() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

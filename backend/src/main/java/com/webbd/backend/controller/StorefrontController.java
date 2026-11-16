@@ -108,6 +108,8 @@ public class StorefrontController {
                 .mapToInt(v -> v.getStockQuantity() != null ? v.getStockQuantity() : 0)
                 .sum();
 
+        int disc = p.getDiscountPercent() != null ? p.getDiscountPercent() : 0;
+        BigDecimal sale = p.getBasePrice().multiply(BigDecimal.valueOf(100 - disc)).divide(BigDecimal.valueOf(100));
         return new ProductCardDTO(
                 p.getId(),
                 p.getName(),
@@ -117,6 +119,8 @@ public class StorefrontController {
                 p.getCategory().getName(),
                 p.getCategory().getId(),
                 p.getBasePrice(),
+                disc,
+                sale,
                 thumb,
                 availableSizes,
                 outOfStockSizes,

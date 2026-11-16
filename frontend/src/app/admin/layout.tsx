@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           Đăng xuất
         </Button>
       </aside>
-      <main className="flex-1 p-8">{children}</main>
+      <main className="flex-1 overflow-x-hidden">{children}</main>
     </div>
   );
 }

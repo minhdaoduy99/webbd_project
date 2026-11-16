@@ -14,6 +14,8 @@ public class ProductCardDTO {
     private String categoryName;
     private Long categoryId;
     private BigDecimal basePrice;
+    private Integer discountPercent;
+    private BigDecimal salePrice;
     private String thumbnailUrl;
     private List<String> availableSizes;
     private List<String> outOfStockSizes;

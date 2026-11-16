@@ -34,6 +34,7 @@ export default function NewProductPage() {
   const [brandId, setBrandId] = useState<number>(1);
   const [categoryId, setCategoryId] = useState<number>(3);
   const [basePrice, setBasePrice] = useState<string>("");
+  const [discountPercent, setDiscountPercent] = useState<number>(0);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -108,6 +109,7 @@ export default function NewProductPage() {
         brandId: Number(brandId),
         categoryId: Number(categoryId),
         basePrice: Number(basePrice),
+        discountPercent: Number(discountPercent),
         thumbnailUrl,
         variants,
       });

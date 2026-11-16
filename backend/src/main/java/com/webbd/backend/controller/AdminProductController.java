@@ -43,6 +43,7 @@ public class AdminProductController {
         private Long brandId;
         private Long categoryId;
         private BigDecimal basePrice;
+        private Integer discountPercent;
         private String thumbnailUrl;
         private List<VariantDTO> variants;
     }
@@ -71,6 +72,7 @@ public class AdminProductController {
         p.setBrand(brand);
         p.setCategory(category);
         p.setBasePrice(req.getBasePrice() != null ? req.getBasePrice() : BigDecimal.ZERO);
+        p.setDiscountPercent(req.getDiscountPercent() != null ? req.getDiscountPercent() : 0);
         p.setIsActive(true);
         p.setCreatedAt(LocalDateTime.now());
         p = productRepository.save(p);
@@ -132,6 +134,7 @@ public class AdminProductController {
                 p.getBrand().getId(),
                 p.getCategory().getId(),
                 p.getBasePrice(),
+                p.getDiscountPercent() != null ? p.getDiscountPercent() : 0,
                 thumb,
                 variants
         ));
@@ -152,6 +155,7 @@ public class AdminProductController {
         p.setBrand(brand);
         p.setCategory(category);
         p.setBasePrice(req.getBasePrice());
+        p.setDiscountPercent(req.getDiscountPercent() != null ? req.getDiscountPercent() : 0);
         productRepository.save(p);
 
         if (req.getThumbnailUrl() != null) {

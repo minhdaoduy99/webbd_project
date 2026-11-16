@@ -35,6 +35,9 @@ public class Product {
     @Column(name = "base_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal basePrice;
 
+    @Column(name = "discount_percent")
+    private Integer discountPercent = 0;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 
