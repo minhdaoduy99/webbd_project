@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -43,6 +45,61 @@ public class AdminProductController {
         private BigDecimal basePrice;
         private String thumbnailUrl;
         private List<VariantDTO> variants;
+    }
+
+    private String toSlug(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replace('đ', 'd').replace('Đ', 'D')
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("(^-|-$)", "");
+        return normalized + "-" + (System.currentTimeMillis() % 100000);
+    }
+
+    @PostMapping
+    @Transactional
+    public ResponseEntity<?> createProduct(@RequestBody ProductDetailDTO req) {
+        Brand brand = brandRepository.findById(req.getBrandId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thương hiệu"));
+        Category category = categoryRepository.findById(req.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
+
+        Product p = new Product();
+        p.setName(req.getName());
+        p.setSlug(toSlug(req.getName()));
+        p.setBrand(brand);
+        p.setCategory(category);
+        p.setBasePrice(req.getBasePrice() != null ? req.getBasePrice() : BigDecimal.ZERO);
+        p.setIsActive(true);
+        p.setCreatedAt(LocalDateTime.now());
+        p = productRepository.save(p);
+
+        if (req.getThumbnailUrl() != null && !req.getThumbnailUrl().isBlank()) {
+            ProductImage img = new ProductImage();
+            img.setProduct(p);
+            img.setImageUrl(req.getThumbnailUrl());
+            img.setIsThumbnail(true);
+            imageRepository.save(img);
+        }
+
+        if (req.getVariants() != null && !req.getVariants().isEmpty()) {
+            int idx = 1;
+            for (VariantDTO vDto : req.getVariants()) {
+                if (vDto.getSize() == null || vDto.getSize().isBlank()) continue;
+                ProductVariant v = new ProductVariant();
+                v.setProduct(p);
+                v.setSku("SP" + p.getId() + "-" + vDto.getSize().replaceAll("\\s+", "") + "-" + idx++);
+                v.setSize(vDto.getSize().trim());
+                v.setColor(vDto.getColor() != null && !vDto.getColor().isBlank() ? vDto.getColor() : "Tiêu chuẩn");
+                v.setGroundType(vDto.getGroundType() != null && !vDto.getGroundType().isBlank() ? vDto.getGroundType() : "TF");
+                v.setPrice(p.getBasePrice());
+                v.setStockQuantity(vDto.getStockQuantity() != null && vDto.getStockQuantity() >= 0 ? vDto.getStockQuantity() : 0);
+                variantRepository.save(v);
+            }
+        }
+
+        return ResponseEntity.ok(Map.of("message", "Thêm sản phẩm thành công", "id", p.getId()));
     }
 
     @GetMapping("/{id}")
@@ -97,7 +154,6 @@ public class AdminProductController {
         p.setBasePrice(req.getBasePrice());
         productRepository.save(p);
 
-        // Cập nhật ảnh đại diện
         if (req.getThumbnailUrl() != null) {
             if (p.getImages().isEmpty()) {
                 ProductImage img = new ProductImage();
@@ -112,7 +168,6 @@ public class AdminProductController {
             }
         }
 
-        // Đồng bộ danh sách biến thể (Size / Tồn kho)
         Set<Long> keepIds = new HashSet<>();
         if (req.getVariants() != null) {
             for (VariantDTO vDto : req.getVariants()) {
@@ -129,6 +184,7 @@ public class AdminProductController {
         }
 
         if (req.getVariants() != null) {
+            int idx = 1;
             for (VariantDTO vDto : req.getVariants()) {
                 ProductVariant v;
                 if (vDto.getId() != null) {
@@ -136,8 +192,7 @@ public class AdminProductController {
                 } else {
                     v = new ProductVariant();
                     v.setProduct(p);
-                    String generatedSku = "SP" + p.getId() + "-" + vDto.getSize().replaceAll("\\s+", "") + "-" + (System.currentTimeMillis() % 100000);
-                    v.setSku(generatedSku);
+                    v.setSku("SP" + p.getId() + "-" + vDto.getSize().replaceAll("\\s+", "") + "-" + (System.currentTimeMillis() % 10000) + idx++);
                 }
                 v.setProduct(p);
                 v.setSize(vDto.getSize());
