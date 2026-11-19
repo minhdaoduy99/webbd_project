@@ -55,9 +55,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link href="/admin/orders" className="px-3 py-2 rounded-md hover:bg-gray-100 font-medium">Quản lý đơn hàng</Link>
           </nav>
         </div>
-        <Button variant="outline" onClick={handleLogout} className="w-full">
+        <div className="space-y-2">
+          <Link href="/" className="block w-full text-center px-3 py-2 rounded-md border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-100">
+            ← Về Trang chủ
+          </Link>
+          <Button variant="outline" onClick={handleLogout} className="w-full">
           Đăng xuất
-        </Button>
+          </Button>
+        </div>
       </aside>
       <main className="flex-1 overflow-x-hidden">{children}</main>
     </div>

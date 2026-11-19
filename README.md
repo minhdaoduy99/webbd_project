@@ -56,6 +56,26 @@
      - Bổ sung trường `discount_percent` và logic tính `salePrice` ở Backend/Database: `Product.java`, `ProductCardDTO.java`, `AdminProductController.java`, `StorefrontController.java`
 
 
+### vi. Cập nhật bổ sung giao diện Storefront, Bộ lọc & Xác thực tài khoản (Đức - Thành viên 4)
+- **Đồng bộ tồn kho & Trạng thái hết hàng:**
+  - Sửa lỗi biên dịch và đồng bộ dữ liệu biến thể size/số lượng tồn kho từ `StorefrontController.java`.
+  - Tự động hiển thị nhãn **`Hết hàng`** ở góc ảnh và làm mờ thẻ sản phẩm khi tổng tồn kho bằng `0` (`frontend/src/app/page.tsx`).
+- **Nâng cấp bố cục Trang chủ & Bộ lọc đa tiêu chí:**
+  - Thiết kế lại bố cục **2 cột** phong cách SoccerStore: Sidebar trái (Danh mục sản phẩm, Dòng giày & phụ kiện hot, Sản phẩm mới nhất) và lưới sản phẩm bên phải.
+  - Bổ sung thanh bộ lọc ngang 4 tiêu chí (**Hãng sản xuất**, **Mức giá**, **Kích cỡ/Size**, **Danh mục**), lọc hàng Sale và sắp xếp theo giá/khuyến mãi.
+- **Cửa sổ Đăng nhập & Đăng ký dùng chung (`frontend/src/app/page.tsx`):**
+  - Tích hợp Modal 2 tab **Đăng nhập** và **Đăng ký** kết nối trực tiếp `/api/v1/auth/login` và `/api/v1/auth/register`.
+  - Tự động phân quyền sau đăng nhập: hiển thị nút **`Trang quản trị`** nếu tài khoản có quyền `ROLE_ADMIN`, hiển thị tên tài khoản nếu là `ROLE_CUSTOMER`.
+
+### 4. NHIỆM VỤ CÒN LẠI CỦA CÁC THÀNH VIÊN (HÀO & TRÁNG)
+- **Luồng Giỏ hàng & Đặt hàng phía Khách hàng (Frontend - Tráng):**
+  - Hoàn thiện chức năng nút **Thêm vào giỏ / Mua ngay** tại trang chi tiết sản phẩm (`frontend/src/app/san-pham/[id]/page.tsx`).
+  - Xây dựng trang **Giỏ hàng (`/cart`)** (cập nhật số lượng, chọn size, xóa sản phẩm, tính tổng tiền) và kích hoạt biểu tượng giỏ hàng trên Header.
+  - Xây dựng trang/form **Thanh toán (Checkout)** nhập thông tin người nhận và xác nhận đặt hàng.
+- **API Đơn hàng & Kết nối dữ liệu thật (Backend - Hào):**
+  - Tạo Entity/Repository/Controller quản lý Đơn hàng (`Order`, `OrderItem`) với các trạng thái `PENDING`, `SHIPPING`, `DELIVERED`.
+  - Mở API `POST /api/v1/orders` cho khách đặt hàng và API quản trị (`GET /api/v1/admin/orders`, `PUT /api/v1/admin/orders/{id}/status`) để đồng bộ dữ liệu trực tiếp sang trang `/admin/orders` và thống kê doanh thu tại `/admin`.
+
 ## 3. TÀI KHOẢN MẪU CÓ SẴN ĐỂ CẢ NHÓM TEST
 - **Tài khoản Admin:** `admin@gmail.com` / Mật khẩu: `123456`
 - **Tài khoản Khách hàng:** `khachhangmoi@gmail.com` / Mật khẩu: `matkhaucuatoi123`

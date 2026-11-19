@@ -109,7 +109,7 @@ public class StorefrontController {
                 .sum();
 
         int disc = p.getDiscountPercent() != null ? p.getDiscountPercent() : 0;
-        BigDecimal sale = p.getBasePrice().multiply(BigDecimal.valueOf(100 - disc)).divide(BigDecimal.valueOf(100));
+        BigDecimal sale = p.getBasePrice().multiply(BigDecimal.valueOf(100 - disc)).divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP);
         return new ProductCardDTO(
                 p.getId(),
                 p.getName(),
@@ -127,5 +127,60 @@ public class StorefrontController {
                 grounds,
                 stock
         );
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @GetMapping("/products/{id}")
+    public org.springframework.http.ResponseEntity<?> getPublicProductDetail(@PathVariable("id") Long id) {
+        try {
+            Product p = productRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm #" + id));
+
+            String thumb = "";
+            if (p.getImages() != null && !p.getImages().isEmpty()) {
+                thumb = p.getImages().stream()
+                        .filter(img -> Boolean.TRUE.equals(img.getIsThumbnail()))
+                        .map(ProductImage::getImageUrl)
+                        .findFirst()
+                        .orElse(p.getImages().get(0).getImageUrl());
+            }
+
+            int discount = p.getDiscountPercent() != null ? p.getDiscountPercent() : 0;
+            BigDecimal base = p.getBasePrice() != null ? p.getBasePrice() : BigDecimal.ZERO;
+            BigDecimal sale = discount > 0
+                    ? base.multiply(BigDecimal.valueOf(100 - discount)).divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP)
+                    : base;
+
+            List<Map<String, Object>> variants = new ArrayList<>();
+            if (p.getVariants() != null) {
+                for (ProductVariant v : p.getVariants()) {
+                    Map<String, Object> vm = new LinkedHashMap<>();
+                    vm.put("id", v.getId());
+                    vm.put("sku", v.getSku());
+                    vm.put("color", v.getColor());
+                    vm.put("size", v.getSize());
+                    vm.put("groundType", v.getGroundType());
+                    vm.put("price", v.getPrice());
+                    vm.put("stock", v.getStockQuantity() != null ? v.getStockQuantity() : 0);
+                    variants.add(vm);
+                }
+            }
+
+            Map<String, Object> res = new LinkedHashMap<>();
+            res.put("id", p.getId());
+            res.put("name", p.getName());
+            res.put("brandName", p.getBrand() != null ? p.getBrand().getName() : "SoccerStore");
+            res.put("categoryName", p.getCategory() != null ? p.getCategory().getName() : "Thể thao");
+            res.put("basePrice", base);
+            res.put("salePrice", sale);
+            res.put("discountPercent", discount);
+            res.put("thumbnailUrl", thumb);
+            res.put("variants", variants);
+
+            return org.springframework.http.ResponseEntity.ok(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.status(500).body(Map.of("error", e.toString()));
+        }
     }
 }
