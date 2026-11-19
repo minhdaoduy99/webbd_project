@@ -4,7 +4,6 @@ import React, { Suspense, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-// 1. Định nghĩa kiểu dữ liệu sản phẩm
 interface ProductDetail {
   id: number | string;
   name: string;
@@ -13,7 +12,15 @@ interface ProductDetail {
   description: string;
 }
 
-// Dữ liệu mẫu dự phòng (hiển thị ngay cả khi API của Bạn 2 chưa bật)
+interface CartItem {
+  id: number | string;
+  name: string;
+  price: number;
+  image: string;
+  size: number;
+  quantity: number;
+}
+
 const FALLBACK_PRODUCTS: Record<string, ProductDetail> = {
   "1": {
     id: 1,
@@ -45,11 +52,9 @@ const FALLBACK_PRODUCTS: Record<string, ProductDetail> = {
   },
 };
 
-// Danh sách 4 size cố định theo đúng đề bài Nhiệm vụ 3
 const AVAILABLE_SIZES = [39, 40, 41, 42];
 
 function ProductDetailContent() {
-  // 2. Lấy tham số [id] từ thanh địa chỉ URL (ví dụ /san-pham/2 -> rawId = "2")
   const params = useParams();
   const rawId = Array.isArray(params?.id) ? params.id[0] : params?.id || "1";
 
@@ -62,12 +67,9 @@ function ProductDetailContent() {
       description: "Giày thể thao chính hãng phân phối bởi WebBD Sneaker.",
     }
   );
-
-  // 3. State lưu size giày khách đang chọn (mặc định chọn sẵn size 40)
   const [selectedSize, setSelectedSize] = useState<number>(40);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  // 4. Gọi API chi tiết sản phẩm của Bạn 2 (nếu Backend đã có API này)
   useEffect(() => {
     async function fetchDetail() {
       try {
@@ -92,24 +94,60 @@ function ProductDetailContent() {
           });
         }
       } catch {
-        // Giữ nguyên dữ liệu mẫu nếu Backend chưa mở API products/{id}
+        // Dùng dữ liệu mẫu khi API chưa bật
       }
     }
     fetchDetail();
   }, [rawId]);
 
+  const handleAddToCart = () => {
+    try {
+      const saved = localStorage.getItem("cart");
+      const existing: CartItem[] = saved ? JSON.parse(saved) : [];
+      const idx = existing.findIndex(
+        (item) => String(item.id) === String(product.id) && item.size === selectedSize
+      );
+
+      if (idx > -1) {
+        existing[idx].quantity += 1;
+      } else {
+        existing.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          size: selectedSize,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(existing));
+      setAddedNotice(true);
+      setTimeout(() => setAddedNotice(false), 3000);
+    } catch (err) {
+      console.error("Lỗi lưu giỏ hàng:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-800 mb-6"
-        >
-          ← Quay lại Trang chủ
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+          >
+            ← Quay lại Trang chủ
+          </Link>
+          <Link
+            href="/gio-hang"
+            className="inline-flex items-center gap-2 text-sm font-semibold bg-white border border-gray-200 px-4 py-2 rounded-xl hover:border-indigo-500 transition"
+          >
+            🛒 Xem giỏ hàng
+          </Link>
+        </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-10">
-          {/* CỘT TRÁI: HIỂN THỊ ẢNH GIÀY */}
           <div className="bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
             <img
               src={product.image}
@@ -118,7 +156,6 @@ function ProductDetailContent() {
             />
           </div>
 
-          {/* CỘT PHẢI: TÊN, GIÁ TIỀN & BẢNG CHỌN SIZE (39, 40, 41, 42) */}
           <div className="flex flex-col justify-between space-y-6">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
@@ -127,17 +164,13 @@ function ProductDetailContent() {
               <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mt-3">
                 {product.name}
               </h1>
-
-              {/* HIỂN THỊ GIÁ TIỀN ĐỊNH DẠNG VNĐ */}
               <p className="text-3xl font-extrabold text-rose-600 mt-4">
                 {product.price.toLocaleString("vi-VN")} ₫
               </p>
-
               <p className="text-sm text-gray-600 mt-4 leading-relaxed">
                 {product.description}
               </p>
 
-              {/* BẢNG CHỌN SIZE 39, 40, 41, 42 */}
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-800">
@@ -166,22 +199,23 @@ function ProductDetailContent() {
               </div>
             </div>
 
-            {/* NÚT THÊM VÀO GIỎ HÀNG */}
             <div className="space-y-3 pt-4 border-t border-gray-100">
               <button
                 type="button"
-                onClick={() => {
-                  setAddedNotice(true);
-                  setTimeout(() => setAddedNotice(false), 2500);
-                }}
+                onClick={handleAddToCart}
                 className="w-full bg-gray-900 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl transition"
               >
                 🛒 Thêm vào giỏ hàng (Size {selectedSize})
               </button>
 
               {addedNotice && (
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium text-center">
-                  Đã chọn <strong>{product.name}</strong> - <strong>Size {selectedSize}</strong>!
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center justify-between">
+                  <span>
+                    Đã thêm <strong>{product.name}</strong> (Size {selectedSize})!
+                  </span>
+                  <Link href="/gio-hang" className="underline font-bold text-emerald-800 ml-2">
+                    Mở giỏ hàng →
+                  </Link>
                 </div>
               )}
             </div>
@@ -192,7 +226,6 @@ function ProductDetailContent() {
   );
 }
 
-// Bọc trong <Suspense> để tương thích với chế độ Cache Components của Next.js 16.4.5
 export default function ProductDetailPage() {
   return (
     <Suspense fallback={<div className="p-10 text-center">Đang tải chi tiết sản phẩm...</div>}>
