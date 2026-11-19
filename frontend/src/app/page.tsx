@@ -98,11 +98,11 @@ export default function HomePage() {
             </Link>
 
             <Link
-              href="/dang-nhap"
-              className="bg-[#4f46e5] hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-full transition shadow-sm"
-            >
-              Đăng nhập
-            </Link>
+  href="/admin/login"
+  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-full transition"
+>
+  Đăng nhập
+</Link>
           </div>
         </div>
       </div>
