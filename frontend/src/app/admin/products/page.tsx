@@ -88,6 +88,7 @@ export default function ProductsPage() {
   const [selectedGround, setSelectedGround] = useState<string>("");
   const [priceIndex, setPriceIndex] = useState<number>(0);
   const [keyword, setKeyword] = useState<string>("");
+  const [onlyLowStock, setOnlyLowStock] = useState<boolean>(false);
   const [sort, setSort] = useState<string>("newest");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
