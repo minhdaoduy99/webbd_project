@@ -88,6 +88,7 @@ export default function ProductsPage() {
   const [selectedGround, setSelectedGround] = useState<string>("");
   const [priceIndex, setPriceIndex] = useState<number>(0);
   const [keyword, setKeyword] = useState<string>("");
+  const [onlyLowStock, setOnlyLowStock] = useState<boolean>(false);
   const [sort, setSort] = useState<string>("newest");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
@@ -692,19 +693,40 @@ export default function ProductsPage() {
 
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Giảm giá (%)</label>
-                <select
-                  value={editingProduct.discountPercent ?? 0}
-                  onChange={(e) =>
-                    setEditingProduct({ ...editingProduct, discountPercent: Number(e.target.value) })
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 bg-white"
-                >
-                  {[0, 5, 10, 15, 20, 25, 30, 40, 50].map((pct) => (
-                    <option key={pct} value={pct}>
-                      {pct === 0 ? "Không giảm (0%)" : `Giảm ${pct}%`}
-                    </option>
-                  ))}
-                </select>
+                <div className="space-y-1.5">
+      <div className="relative flex items-center">
+        <input
+          type="number"
+          min={0}
+          max={99}
+          step={1}
+          value={editingProduct.discountPercent ?? 0}
+          onChange={(e) => {
+            const val = Math.max(0, Math.min(99, Math.floor(Number(e.target.value) || 0)));
+            setEditingProduct({ ...editingProduct, discountPercent: val });
+          }}
+          placeholder="Nhập % giảm (0 - 99)"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-8 text-sm focus:border-zinc-900 focus:outline-none"
+        />
+        <span className="absolute right-3 text-sm font-semibold text-gray-400">%</span>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {[0, 15, 25, 35, 45, 50].map((pct) => (
+          <button
+            key={pct}
+            type="button"
+            onClick={() => setEditingProduct({ ...editingProduct, discountPercent: pct })}
+            className={`px-2 py-0.5 rounded text-[11px] font-medium border cursor-pointer transition ${
+              (editingProduct.discountPercent ?? 0) === pct
+                ? "bg-zinc-900 text-white border-zinc-900"
+                : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+            }`}
+          >
+            {pct === 0 ? "0%" : `-${pct}%`}
+          </button>
+        ))}
+      </div>
+    </div>
                 <p className="text-xs text-emerald-700 font-semibold mt-1">
                   Giá sau giảm: {Math.round(Number(editingProduct.basePrice) * (100 - (editingProduct.discountPercent ?? 0)) / 100).toLocaleString("vi-VN")} đ
                 </p>

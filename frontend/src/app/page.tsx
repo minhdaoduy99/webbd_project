@@ -149,7 +149,151 @@ export default function HomePage() {
                 alt={BANNERS[currentSlide].title}
                 className="w-full max-w-md h-64 object-cover rounded-xl shadow-lg"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 text-white">
+                <span className="inline-block bg-amber-400 text-zinc-950 text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded mb-2">
+                  New Pack 2026
+                </span>
+                <h2 className="text-2xl font-black tracking-tight uppercase leading-tight">
+                  Bright Lights Pack
+                </h2>
+                <p className="text-xs text-zinc-300 mt-1">Bứt tốc mọi mặt sân cỏ nhân tạo & tự nhiên</p>
+              </div>
             </div>
+
+            <div
+              onClick={() => {
+                setSelectedCategory("ALL");
+                setSelectedBrand("ALL");
+                setOnlyDiscount(false);
+                document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="md:col-span-5 relative h-80 md:h-[430px] rounded-xl overflow-hidden group cursor-pointer border border-zinc-800"
+            >
+              <img
+                src="https://media.soccerstore.vn/soccerstore/2026/10/Adidas-F50-Final-Rush-on-Julian-Alvares.png"
+                alt="Hàng mới về"
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+              <div className="absolute inset-x-5 bottom-6 text-center text-white flex flex-col items-center">
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+                  SoccerStore Official
+                </span>
+                <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tight mt-1">
+                  Final Rush Edition
+                </h1>
+                <p className="text-xs text-zinc-300 mt-1.5 max-w-sm">
+                  Đầy đủ các mẫu giày bóng đá chính hãng Nike, Adidas, Mizuno, Kamito, NMS
+                </p>
+                <span className="mt-4 inline-block bg-zinc-900/90 hover:bg-amber-400 hover:text-zinc-950 text-white border border-zinc-600 text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-lg transition">
+                  Hàng mới về
+                </span>
+              </div>
+            </div>
+
+            <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-1 gap-3.5 h-auto md:h-[430px]">
+              <div
+                onClick={() => {
+                  setSelectedCategory("Giày bóng đá sân cỏ nhân tạo");
+                  setOnlyDiscount(false);
+                  document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative h-44 md:h-full rounded-xl overflow-hidden group cursor-pointer border border-zinc-800"
+              >
+                <img
+                  src="https://media.soccerstore.vn/soccerstore/2026/10/ChatGPT-Image-Sep-26-2026-10_47_51-AM.png"
+                  alt=""
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+                  <div className="text-sm font-extrabold uppercase">Giày Sân Cỏ Nhân Tạo</div>
+                  <div className="text-[11px] text-amber-400 font-semibold">Đế TF bám sân cực tốt →</div>
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedCategory("ALL");
+                  setSelectedBrand("ALL");
+                  setOnlyDiscount(true);
+                  document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative h-44 md:h-full rounded-xl overflow-hidden group cursor-pointer border border-zinc-800"
+              >
+                <img
+                  src="https://scontent.fhan9-1.fna.fbcdn.net/v/t39.30808-6/482977476_980979800802942_1822166685469997831_n.jpg?stp=dst-jpg_tt6&cstp=mx1280x800&ctp=s526x395&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=bd9a62&_nc_eui2=AeF4X9-mROFfTOFHp5OtF7Ts0k1zOn4apz_STXM6fhqnP9iea2hQyMLFEMk6hX0FVMWFO7G9LRc8FiThOa1gefoA&_nc_ohc=WlwNcGVqrYYQ7kNvwEREcIa&_nc_oc=AdriCICRnlR7grt0OIQhLv8NLqXYEAwIwD6pzOBDcncpU8inHjAppLpTCZRU4Bst7jSlBwnUv1eBk-a4JU1XNmwj&_nc_zt=23&_nc_ht=scontent.fhan9-1.fna&_nc_gid=zpkPOnXnDjZabCh_1pPJRA&_nc_ss=7b2a8&oh=00_AQTyfxYLmRt0MvhEbe6ff0YARP13_M2pqtKTwLKNADNGRQ&oe=6B04A3F7"
+                  alt="Xả kho giảm giá"
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-rose-950/90 via-black/40 to-transparent" />
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+                  <span className="inline-block bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-1">
+                    Hot Deals
+                  </span>
+                  <div className="text-sm font-extrabold uppercase">Ưu Đãi Giảm Giá</div>
+                  <div className="text-[11px] text-zinc-200">Xem toàn bộ sản phẩm sale →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              {
+                title: "Nike Mercurial",
+                img: "https://media.soccerstore.vn/soccerstore/2025/03/web-new-2-690x690.png",
+                action: () => { setSelectedCategory("ALL"); setSelectedBrand("ALL"); setSearchTerm("MERCURIAL"); },
+              },
+              {
+                title: "Nike Tiempo",
+                img: "https://media.soccerstore.vn/soccerstore/2025/03/web-new-3-690x690.png",
+                action: () => { setSelectedCategory("ALL"); setSelectedBrand("ALL"); setSearchTerm("TIEMPO"); },
+              },
+              {
+                title: "Adidas F50",
+                img: "https://media.soccerstore.vn/soccerstore/2025/03/web-new-690x690.png",
+                action: () => { setSelectedCategory("ALL"); setSelectedBrand("Adidas"); setSearchTerm(""); },
+              },
+              {
+                title: "Mizuno Morelia",
+                img: "https://i.pinimg.com/474x/9e/7e/79/9e7e79b40332e7f5ba5599fc73deb5f3.jpg",
+                action: () => { setSelectedCategory("ALL"); setSelectedBrand("Mizuno"); setSearchTerm(""); },
+              },
+              {
+                title: "Giày NMS / Kamito",
+                img: "https://cdn.hstatic.net/themes/1000341630/1001416770/14/logo.png?v=6988",
+                action: () => { setSelectedCategory("ALL"); setSelectedBrand("NMS"); setSearchTerm(""); },
+              },
+              {
+                title: "Găng tay thủ môn",
+                img: "https://media.soccerstore.vn/soccerstore/2025/03/web-new-6-690x690.png",
+                action: () => { setSelectedBrand("ALL"); setSearchTerm(""); setSelectedCategory("Găng tay thủ môn"); },
+              },
+            ].map((item) => (
+              <button
+                key={item.title}
+                type="button"
+                onClick={() => {
+                  setOnlyDiscount(false);
+                  item.action();
+                  document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="group flex flex-col items-center text-center cursor-pointer"
+              >
+                <div className="w-full aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 group-hover:border-amber-400 transition shadow-md">
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                  />
+                </div>
+                <span className="mt-2.5 text-sm font-bold text-zinc-100 group-hover:text-amber-400 transition">
+                  {item.title}
+                </span>
+              </button>
+            ))}
           </div>
         </section>
 
