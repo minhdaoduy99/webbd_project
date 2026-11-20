@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Dịch vụ Cơ sở dữ liệu MySQL 8.0
   mysqldb:
@@ -12,8 +10,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      # Giữ lại dữ liệu trên ổ cứng máy thật, không bao giờ lo mất dữ liệu khi tắt máy
+      # Giữ lại dữ liệu trên ổ cứng máy thật
       - mysql_data:/var/lib/mysql
-
-volumes:
-  mysql_data:
+      # Tự động chạy toàn bộ file .sql trong thư mục database khi khởi tạo lần đầu
+      - ./database:/docker-entrypoint-initdb.d
