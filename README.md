@@ -1,50 +1,31 @@
-## 1. NHỮNG GÌ ĐÃ HOÀN THÀNH
-- **Database:** Đã kết nối thành công với MySQL 8.0 trong Docker (`WebBD_db`), quản lý 10 bảng chuẩn 3NF.
-- **Bảo mật:** Tích hợp Spring Security 6 và cỗ máy sinh vé JWT Token (`JwtUtils`).
-- **Mã hóa:** Toàn bộ mật khẩu người dùng được băm tự động bằng chuẩn an toàn `BCrypt`.
-- **CORS:** Đã mở quyền cho Frontend Next.js (chạy cổng `3000`) gọi sang cổng `8080` không bị chặn.
-- **2 API cốt lõi đã chạy thành công 100% trên Postman:**
-  - `POST http://localhost:8080/api/v1/auth/register` (Đăng ký tài khoản)
-  - `POST http://localhost:8080/api/v1/auth/login` (Đăng nhập và nhận chuỗi JWT Token)
+# SoccerStore Vietnam - Hệ thống Thương mại điện tử Giày Bóng Đá
 
----
+Dự án website bán giày bóng đá và phụ kiện thể thao tích hợp trang khách hàng (Storefront) và trang quản trị (Admin Dashboard).
 
-## 2. PHÂN CÔNG NHIỆM VỤ CỤ THỂ CHO 3 AE
+## Công nghệ sử dụng
+- **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS
+- **Backend:** Java, Spring Boot, Spring Security (JWT), Spring Data JPA
+- **Database:** MySQL
 
-### HÀO (BACKEND DEV - NGHIỆP VỤ BÁN HÀNG)
-*Nhánh làm việc:* Tạo nhánh `feature/product-api` từ `develop`.
-- **Nhiệm vụ 1:** Tạo các Entity trong thư mục `entity/` tương ứng với các bảng đã có sẵn trong MySQL:
-  - `Brand.java` (Thương hiệu: Nike, Adidas...)
-  - `Category.java` (Danh mục: Giày cỏ nhân tạo, tự nhiên...)
-  - `Product.java` (Thông tin giày chính)
-  - `ProductVariant.java` (Biến thể: Size 39, 40, màu sắc, loại đinh, tồn kho)
-- **Nhiệm vụ 2:** Tạo các Repository tương ứng trong `repository/` kế thừa `JpaRepository`.
-- **Nhiệm vụ 3:** Viết `ProductController.java` cung cấp 2 API cho Frontend:
-  - `GET /api/v1/products` (Lấy danh sách tất cả các đôi giày kèm ảnh và giá).
-  - `GET /api/v1/products/{id}` (Lấy chi tiết 1 đôi giày kèm các size còn hàng).
-- **Lưu ý:** Tự test bằng Postman đạt mã `200 OK` trước khi gửi cho Frontend.
+## Các tính năng chính
+### 1. Trang khách hàng (Storefront)
+- Giao diện nền tối **Dark Navy** đồng bộ với hệ thống banner thể thao.
+- Hiển thị danh mục sản phẩm, lọc theo hãng sản xuất, mức giá, kích cỡ (size) và sản phẩm khuyến mãi.
+- Giỏ hàng (`/gio-hang`) và quy trình đặt hàng trực tuyến (COD), tự động trừ tồn kho theo từng size khi đặt đơn thành công.
 
----
+### 2. Trang quản trị (Admin Dashboard)
+- **Quản lý sản phẩm:** Thêm, sửa, xóa sản phẩm, quản lý biến thể size và tồn kho.
+- **Quản lý đơn hàng (`/admin/orders`):**
+  - Theo dõi danh sách đơn hàng theo thời gian thực từ MySQL, lọc theo trạng thái (`PENDING`, `SHIPPING`, `DELIVERED`).
+  - Cập nhật trạng thái giao hàng trực tiếp.
+  - **Xuất phiếu giao hàng khổ A4:** Mẫu chứng từ bảng biểu 7 cột (Stt, Tên mặt hàng kèm size, Đvt, Số lượng, Đơn giá, Thành tiền, Ghi chú), tự động đọc tổng tiền bằng chữ tiếng Việt và hỗ trợ in/xuất PDF trực tiếp.
 
-### TRÁNG (FRONTEND SHOP - GIAO DIỆN KHÁCH HÀNG & SEO)
-*Nhánh làm việc:* Tạo nhánh `feature/storefront-ui` từ `develop`.
-- **Nhiệm vụ 1:** Mở thư mục `frontend/`, chạy `npm run dev` để bật giao diện cổng 3000.
-- **Nhiệm vụ 2 (Trang chủ `app/page.tsx`):** Dựng Header (Logo, ô tìm kiếm, icon giỏ hàng), Banner trượt và danh sách thẻ sản phẩm (Card) lấy từ API của Bạn 2.
-- **Nhiệm vụ 3 (Trang chi tiết `app/san-pham/[id]/page.tsx`):** Hiển thị ảnh giày, giá tiền, bảng chọn size (39, 40, 41, 42).
-- **Nhiệm vụ 4:** Gọi API `POST /api/v1/auth/login` của Leader khi khách bấm Đăng nhập. Lưu token nhận được vào `localStorage`.
+## Hướng dẫn chạy dự án
+1. **Khởi chạy Backend (Cổng 8080):** Vào thư mục `backend` và chạy `./mvnw spring-boot:run`
+2. **Khởi chạy Frontend (Cổng 3000):** Vào thư mục `frontend` và chạy `npm install && npm run dev`
 
----
-
-### ĐỨC (FRONTEND ADMIN - GIAO DIỆN QUẢN TRỊ)
-*Nhánh làm việc:* Tạo nhánh `feature/admin-dashboard` từ `develop`.
-- **Nhiệm vụ 1:** Dựng trang Quản trị tại đường dẫn `/admin` có thanh Sidebar bên trái: Dashboard, Quản lý sản phẩm, Quản lý đơn hàng.
-- **Nhiệm vụ 2:** Dựng bảng Table hiển thị danh sách sản phẩm và đơn hàng (khuyên dùng thư viện UI có sẵn như Shadcn UI / Flowbite).
-- **Nhiệm vụ 3:** Tạo trang Đăng nhập riêng cho Admin.
-- **Lưu ý quan trọng:** Khi gọi các API quản trị, bắt buộc phải đính kèm Token trong Header:
-  `headers: { 'Authorization': 'Bearer ' + token }`
-
----
-
-## 3. TÀI KHOẢN MẪU CÓ SẴN ĐỂ CẢ NHÓM TEST
-- **Tài khoản Admin:** `admin@gmail.com` / Mật khẩu: `123456`
-- **Tài khoản Khách hàng:** `khachhangmoi@gmail.com` / Mật khẩu: `matkhaucuatoi123`
+## Thành viên thực hiện
+- Minh (Trưởng nhóm)
+- Lê Minh Đức
+- Hào
+- Trần Quốc Tráng
