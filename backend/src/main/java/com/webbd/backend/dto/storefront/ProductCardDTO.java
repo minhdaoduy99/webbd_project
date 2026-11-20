@@ -19,6 +19,7 @@ public class ProductCardDTO {
     private String thumbnailUrl;
     private List<String> availableSizes;
     private List<String> outOfStockSizes;
+    private List<String> lowStockSizes;
     private List<String> groundTypes;
     private int totalStock;
 }

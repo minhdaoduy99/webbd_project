@@ -115,6 +115,12 @@ public class StorefrontController {
                 .distinct()
                 .collect(Collectors.toList());
 
+        List<String> lowStockSizes = p.getVariants().stream()
+                .filter(v -> v.getStockQuantity() != null && v.getStockQuantity() > 0 && v.getStockQuantity() <= 5)
+                .map(v -> v.getSize() + " (còn " + v.getStockQuantity() + ")")
+                .distinct()
+                .collect(Collectors.toList());
+
         List<String> grounds = p.getVariants().stream()
                 .map(ProductVariant::getGroundType)
                 .distinct()
@@ -140,6 +146,7 @@ public class StorefrontController {
                 thumb,
                 availableSizes,
                 outOfStockSizes,
+                lowStockSizes,
                 grounds,
                 stock
         );

@@ -11,6 +11,7 @@ interface ProductAlert {
   category?: string;
   stock: number;
   outOfStockSizes?: string[];
+  lowStockSizes?: string[];
   sizes?: string[];
 }
 
@@ -55,9 +56,10 @@ export default function AdminDashboardPage() {
             category: p.category || "",
             stock: p.totalStock ?? p.stock ?? 0,
             outOfStockSizes: Array.isArray(p.outOfStockSizes) ? p.outOfStockSizes : [],
+            lowStockSizes: Array.isArray(p.lowStockSizes) ? p.lowStockSizes : [],
             sizes: Array.isArray(p.sizes) ? p.sizes : [],
           }))
-          .filter((p) => p.stock <= 5 || (p.outOfStockSizes && p.outOfStockSizes.length > 0))
+          .filter((p) => p.stock <= 5 || (p.outOfStockSizes && p.outOfStockSizes.length > 0) || (p.lowStockSizes && p.lowStockSizes.length > 0))
           .sort((a, b) => a.stock - b.stock)
           .slice(0, 8);
         setLowStockProducts(alerts);
@@ -341,7 +343,7 @@ export default function AdminDashboardPage() {
                 <thead>
                   <tr className="border-b text-xs text-gray-500 uppercase">
                     <th className="py-2 pr-3">Sản phẩm</th>
-                    <th className="py-2 px-2">Size hết hàng</th>
+                    <th className="py-2 px-2">Size hết / sắp hết</th>
                     <th className="py-2 pl-2 text-right">Tổng tồn</th>
                   </tr>
                 </thead>
@@ -353,20 +355,28 @@ export default function AdminDashboardPage() {
                         <p className="text-xs text-gray-400">{item.brandName}</p>
                       </td>
                       <td className="py-2.5 px-2">
-                        {item.outOfStockSizes && item.outOfStockSizes.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {item.outOfStockSizes.map((s) => (
-                              <span
-                                key={s}
-                                className="px-1.5 py-0.5 text-[11px] font-semibold rounded bg-amber-100 text-amber-800"
-                              >
-                                Size {s}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-gray-400">—</span>
-                        )}
+                        {(item.outOfStockSizes && item.outOfStockSizes.length > 0) || (item.lowStockSizes && item.lowStockSizes.length > 0) ? (
+                            <div className="flex flex-wrap gap-1">
+                              {(item.outOfStockSizes || []).map((s) => (
+                                <span
+                                  key={`out-${s}`}
+                                  className="px-1.5 py-0.5 text-[11px] font-semibold rounded bg-red-100 text-red-700"
+                                >
+                                  Size {s} (Hết)
+                                </span>
+                              ))}
+                              {(item.lowStockSizes || []).map((s) => (
+                                <span
+                                  key={`low-${s}`}
+                                  className="px-1.5 py-0.5 text-[11px] font-semibold rounded bg-amber-100 text-amber-800"
+                                >
+                                  Size {s}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">Sắp hết toàn bộ</span>
+                          )}
                       </td>
                       <td className="py-2.5 pl-2 text-right whitespace-nowrap">
                         {item.stock === 0 ? (
