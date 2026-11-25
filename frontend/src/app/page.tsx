@@ -7,10 +7,6 @@ export interface Product {
   id: number | string;
   name: string;
   price: number;
-<<<<<<< HEAD
-  image: string;
-  brand?: string;
-=======
   salePrice?: number;
   discountPercent?: number;
   image: string;
@@ -18,7 +14,6 @@ export interface Product {
   category?: string;
   availableSizes?: string[];
   totalStock?: number;
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
 }
 
 const FALLBACK_PRODUCTS: Product[] = [
@@ -72,10 +67,6 @@ const BANNERS = [
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   const [searchTerm, setSearchTerm] = useState("");
-<<<<<<< HEAD
-  const [currentBanner, setCurrentBanner] = useState(0);
-  const [cartCount] = useState(2);
-=======
   const [categories, setCategories] = useState<{ id: number; name: string; children?: { id: number; name: string }[] }[]>([]);
   const [brands, setBrands] = useState<{ id: number; name: string }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
@@ -104,7 +95,6 @@ export default function HomePage() {
     window.addEventListener("storage", syncCart);
     return () => window.removeEventListener("storage", syncCart);
   }, []);
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
 
   // State cho Nhiệm vụ 4: Đăng nhập & lưu JWT vào localStorage
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -113,28 +103,21 @@ export default function HomePage() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginMessage, setLoginMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [savedToken, setSavedToken] = useState<string | null>(null);
-<<<<<<< HEAD
-=======
   const [isAdmin, setIsAdmin] = useState(false);
   const [authMode, setAuthMode] = useState<"LOGIN" | "REGISTER">("LOGIN");
   const [regFullName, setRegFullName] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regAddress, setRegAddress] = useState("");
   const [loggedInEmail, setLoggedInEmail] = useState<string | null>(null);
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
 
   // Kiểm tra token đã lưu trong localStorage khi mở trang
   useEffect(() => {
     const token = localStorage.getItem("token");
-<<<<<<< HEAD
-    if (token) setSavedToken(token);
-=======
     const roles = localStorage.getItem("roles") || "";
     if (token) setSavedToken(token);
     if (roles.includes("ROLE_ADMIN")) setIsAdmin(true);
     const savedEmail = localStorage.getItem("userEmail");
     if (savedEmail) setLoggedInEmail(savedEmail);
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
   }, []);
 
   // Tự động chuyển slide Banner mỗi 4 giây
@@ -149,28 +132,12 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-<<<<<<< HEAD
-        const res = await fetch("http://localhost:8080/api/v1/products");
-=======
         const res = await fetch("http://localhost:8080/api/v1/public/products");
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
         if (!res.ok) return;
         const raw = await res.json();
         const list = Array.isArray(raw) ? raw : raw.data || raw.content || [];
         if (list.length > 0) {
           const mapped: Product[] = list.map((item: Record<string, unknown>, idx: number) => ({
-<<<<<<< HEAD
-            id: (item.id as number | string) ?? idx + 1,
-            name: (item.name || item.tenSanPham || item.title || `Giày Sneaker #${idx + 1}`) as string,
-            price: Number(item.price ?? item.gia ?? 2500000),
-            brand: (item.brand || item.thuongHieu || "Sneaker") as string,
-            image:
-              (item.image ||
-                item.imageUrl ||
-                item.hinhAnh ||
-                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80") as string,
-          }));
-=======
           id: (item.id as number | string) ?? idx + 1,
           name: (item.name || `Sản phẩm #${idx + 1}`) as string,
           price: Number(item.basePrice ?? item.price ?? 0),
@@ -185,7 +152,6 @@ export default function HomePage() {
               item.image ||
               "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80") as string,
         }));
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
           setProducts(mapped);
         }
       } catch {
@@ -193,8 +159,6 @@ export default function HomePage() {
       }
     }
     fetchProducts();
-<<<<<<< HEAD
-=======
     fetch("http://localhost:8080/api/v1/public/categories")
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setCategories(Array.isArray(d) ? d : []))
@@ -203,7 +167,6 @@ export default function HomePage() {
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setBrands(Array.isArray(d) ? d : []))
       .catch(() => {});
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
   }, []);
 
   // Xử lý Nhiệm vụ 4: Gọi POST /api/v1/auth/login của Leader
@@ -219,39 +182,6 @@ export default function HomePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-<<<<<<< HEAD
-          username: usernameOrEmail,
-          email: usernameOrEmail,
-          password: password,
-        }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.message || "Sai tài khoản hoặc mật khẩu!");
-      }
-
-      // Lấy chuỗi JWT từ các trường phổ biến hoặc chuỗi trực tiếp
-      const token =
-        typeof data === "string"
-          ? data
-          : data.token || data.accessToken || data.jwt || data.data?.token;
-
-      if (!token) {
-        throw new Error("Đăng nhập thành công nhưng không tìm thấy trường token trong phản hồi!");
-      }
-
-      localStorage.setItem("token", token);
-      setSavedToken(token);
-      setLoginMessage({ type: "success", text: "Đăng nhập thành công! Đã lưu JWT vào localStorage." });
-      setTimeout(() => {
-        setShowLoginModal(false);
-        setLoginMessage(null);
-      }, 1200);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Không thể kết nối tới Server cổng 8080";
-=======
           email: usernameOrEmail.trim(),
           password,
         }),
@@ -351,7 +281,6 @@ export default function HomePage() {
       }, 1100);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Không thể kết nối tới máy chủ.";
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
       setLoginMessage({ type: "error", text: message });
     } finally {
       setLoginLoading(false);
@@ -360,24 +289,6 @@ export default function HomePage() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-<<<<<<< HEAD
-    setSavedToken(null);
-  };
-
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* HEADER */}
-      <header className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl tracking-tight text-indigo-600">
-            <span>👟</span>
-            <span>WebBD Sneaker</span>
-=======
     localStorage.removeItem("roles");
     setSavedToken(null);
     setIsAdmin(false);
@@ -423,7 +334,6 @@ export default function HomePage() {
           <Link href="/" className="flex items-center gap-2 font-extrabold text-2xl tracking-tight text-indigo-400">
             <span>👟</span>
             <span>SoccerStore</span>
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
           </Link>
 
           {/* Ô tìm kiếm */}
@@ -433,13 +343,8 @@ export default function HomePage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-<<<<<<< HEAD
-                placeholder="Tìm kiếm giày Nike, Adidas, Jordan..."
-                className="w-full rounded-full border border-gray-300 bg-gray-100 py-2 pl-4 pr-10 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none"
-=======
                 placeholder="Tìm kiếm giày bóng đá Nike, Adidas, Mizuno..."
                 className="w-full rounded-full border border-slate-700 bg-slate-800 py-2 pl-4 pr-10 text-sm focus:border-indigo-500 focus:bg-slate-900 focus:outline-none"
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
               />
               <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
             </div>
@@ -447,33 +352,15 @@ export default function HomePage() {
 
           {/* Giỏ hàng & Nút Đăng nhập */}
           <div className="flex items-center gap-4">
-<<<<<<< HEAD
-            <button
-              type="button"
-              className="relative p-2 rounded-full hover:bg-gray-100 transition"
-=======
             <Link href="/gio-hang"
               type="button"
               className="relative p-2 rounded-full hover:bg-slate-800 transition"
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
               title="Giỏ hàng"
             >
               <span className="text-xl">🛒</span>
               <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
-<<<<<<< HEAD
-            </button>
-
-            {savedToken ? (
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium">
-                  Đã đăng nhập (JWT)
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="text-sm text-gray-600 hover:text-rose-600 font-medium"
-=======
             </Link>
 
             {savedToken ? (
@@ -493,7 +380,6 @@ export default function HomePage() {
                 <button
                   onClick={handleLogout}
                   className="text-sm text-slate-400 hover:text-rose-600 font-medium"
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
                 >
                   Đăng xuất
                 </button>
@@ -510,93 +396,6 @@ export default function HomePage() {
         </div>
       </header>
 
-<<<<<<< HEAD
-      {/* BANNER TRƯỢT (SLIDER) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div
-          className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${BANNERS[currentBanner].bg} text-white shadow-lg`}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center p-8 md:p-12 gap-8 min-h-[320px]">
-            <div className="space-y-4 z-10">
-              <span className="inline-block bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                WebBD Official Store
-              </span>
-              <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
-                {BANNERS[currentBanner].title}
-              </h1>
-              <p className="text-gray-200 text-sm md:text-base">
-                {BANNERS[currentBanner].subtitle}
-              </p>
-              <div className="pt-2 flex gap-2">
-                {BANNERS.map((b, idx) => (
-                  <button
-                    key={b.id}
-                    onClick={() => setCurrentBanner(idx)}
-                    className={`h-2.5 rounded-full transition-all ${
-                      currentBanner === idx ? "w-8 bg-white" : "w-2.5 bg-white/40"
-                    }`}
-                    aria-label={`Slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <img
-                src={BANNERS[currentBanner].image}
-                alt={BANNERS[currentBanner].title}
-                className="h-56 md:h-64 w-full max-w-md object-cover rounded-xl shadow-2xl transform hover:scale-105 transition duration-500"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* DANH SÁCH THẺ SẢN PHẨM (CARD) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Sản phẩm nổi bật</h2>
-          <span className="text-sm text-gray-500">{filteredProducts.length} sản phẩm</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
-            >
-              <Link href={`/san-pham/${product.id}`} className="block overflow-hidden bg-gray-100 h-56">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover hover:scale-105 transition duration-300"
-                />
-              </Link>
-              <div className="p-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <span className="text-xs font-semibold uppercase text-indigo-600">
-                    {product.brand || "Sneaker"}
-                  </span>
-                  <Link href={`/san-pham/${product.id}`}>
-                    <h3 className="font-bold text-gray-900 mt-1 line-clamp-2 hover:text-indigo-600 transition">
-                      {product.name}
-                    </h3>
-                  </Link>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-lg font-extrabold text-rose-600">
-                    {product.price.toLocaleString("vi-VN")} ₫
-                  </span>
-                  <Link
-                    href={`/san-pham/${product.id}`}
-                    className="text-xs font-semibold bg-gray-900 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg transition"
-                  >
-                    Xem chi tiết
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-=======
       {/* THANH MENU DANH MỤC & THƯƠNG HIỆU KIỂU SOCCERSTORE */}
       <nav
         className="bg-zinc-900 text-zinc-100 border-b border-zinc-800 sticky top-16 z-30 shadow-md"
@@ -748,7 +547,6 @@ export default function HomePage() {
           >
             Sale / Giảm Giá
           </button>
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
         </div>
       </nav>
 
@@ -1337,70 +1135,6 @@ export default function HomePage() {
         })()}
       </main>
 
-<<<<<<< HEAD
-      {/* MODAL ĐĂNG NHẬP (NHIỆM VỤ 4) */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl relative">
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl"
-            >
-              ✕
-            </button>
-            <h3 className="text-xl font-bold text-gray-900 mb-1">Đăng nhập tài khoản</h3>
-            <p className="text-xs text-gray-500 mb-4">
-              Kết nối trực tiếp tới API <code className="bg-gray-100 px-1 rounded">POST /api/v1/auth/login</code>
-            </p>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên đăng nhập hoặc Email
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={usernameOrEmail}
-                  onChange={(e) => setUsernameOrEmail(e.target.value)}
-                  placeholder="Nhập username hoặc email..."
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
-                />
-              </div>
-
-              {loginMessage && (
-                <div
-                  className={`p-3 rounded-lg text-xs font-medium ${
-                    loginMessage.type === "success"
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-rose-50 text-rose-700 border border-rose-200"
-                  }`}
-                >
-                  {loginMessage.text}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loginLoading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2.5 rounded-lg transition text-sm"
-              >
-                {loginLoading ? "Đang xác thực..." : "Đăng nhập ngay"}
-              </button>
-            </form>
-=======
       {/* MODAL ĐĂNG NHẬP & ĐĂNG KÝ TÀI KHOẢN */}
       {showLoginModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
@@ -1632,7 +1366,6 @@ export default function HomePage() {
                 </p>
               </form>
             )}
->>>>>>> 6090b6bf5f7a1de978b72bccbb2f8380052dfd9e
           </div>
         </div>
       )}

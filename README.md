@@ -49,9 +49,9 @@
 ### 4. ĐỨC (Frontend Admin - Giao diện quản trị & Bảo mật)
 - **Nhánh làm việc:** `feat/fe-admin-polish` (từ `develop`)
 - **Nhiệm vụ (Rà soát tính năng quản trị & Bảo mật trước khi nộp):**
-  - [ ] **Kiểm tra CRUD & Upload ảnh:** Test lại luồng Thêm/Sửa/Xóa sản phẩm (`/admin/products/new`), chỉnh sửa tồn kho từng size và API `/api/upload` đảm bảo ảnh mới hiển thị đúng cả ở Trang chủ lẫn Trang chi tiết.
-  - [ ] **Test vòng đời Đơn hàng & Biểu đồ:** Test đổi trạng thái đơn hàng từ `PENDING` -> `DELIVERED` ở `/admin/orders` và kiểm tra **Biểu đồ doanh thu 12 tháng** trên `/admin` nhảy số chính xác.
-  - [ ] **Bảo mật giao diện Admin:** Xác nhận tài khoản `ROLE_CUSTOMER` không thể truy cập `/admin/**`; **xóa mật khẩu điền sẵn** ở trang `/admin/login` trước ngày bảo vệ; đảm bảo `npm run build` xanh sạch.
+  - [x] **Kiểm tra CRUD & Upload ảnh:** Test lại luồng Thêm/Sửa/Xóa sản phẩm (`/admin/products/new`), chỉnh sửa tồn kho từng size và API `/api/upload` đảm bảo ảnh mới hiển thị đúng cả ở Trang chủ lẫn Trang chi tiết.
+  - [x] **Test vòng đời Đơn hàng & Biểu đồ:** Test đổi trạng thái đơn hàng từ `PENDING` -> `DELIVERED` ở `/admin/orders` và kiểm tra **Biểu đồ doanh thu 12 tháng** trên `/admin` nhảy số chính xác.
+  - [x] **Bảo mật giao diện Admin:** Xác nhận tài khoản `ROLE_CUSTOMER` không thể truy cập `/admin/**`; **xóa mật khẩu điền sẵn** ở trang `/admin/login` trước ngày bảo vệ; đảm bảo `npm run build` xanh sạch.
 - **Từ khóa tự nghiên cứu:** `Next.js protected route role guard`, `React Hook Form Zod validation`, `Axios interceptor handle 401 403`.
 
 ### 5. THÀNH VIÊN 5 (BA, QA Testing, Dữ liệu chuẩn & Báo cáo)
