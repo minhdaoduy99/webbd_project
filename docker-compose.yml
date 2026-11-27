@@ -1,16 +1,69 @@
 services:
-  # Dịch vụ Cơ sở dữ liệu MySQL 8.0
+  # 1. Cơ sở dữ liệu MySQL 8.0
   mysqldb:
     image: mysql:8.0
     container_name: soccerstore-mysql
-    restart: always
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: WebBD_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-WebBD_db}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      # Giữ lại dữ liệu trên ổ cứng máy thật
+      # Giữ lại dữ liệu trên ổ cứng khi tắt/xây lại container
       - mysql_data:/var/lib/mysql
-      # Tự động chạy toàn bộ file .sql trong thư mục database khi khởi tạo lần đầu
-      - ./database:/docker-entrypoint-initdb.d
+      # Tự động chạy toàn bộ file .sql khi khởi tạo volume lần đầu
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # 2. API Server Spring Boot (Java 25)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: soccerstore-backend
+    restart: unless-stopped
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysqldb:3306/${MYSQL_DATABASE:-WebBD_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      JWT_SECRET: ${JWT_SECRET:-9a4f2c8d3e71b5a8e6c8f921435d7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
+      JPA_FORMAT_SQL: ${JPA_FORMAT_SQL:-false}
+    ports:
+      - "8080:8080"
+
+  # 3. Giao diện Next.js 16 (Standalone)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    container_name: soccerstore-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Server Component ben trong container goi thang container backend qua mang noi bo Docker
+      INTERNAL_API_URL: http://backend:8080
+    volumes:
+      # Giữ lại ảnh upload mới không bị mất khi rebuild frontend
+      - uploads_data:/app/public/uploads
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:
+  uploads_data:

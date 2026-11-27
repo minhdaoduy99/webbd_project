@@ -1,0 +1,12 @@
+# Bien moi truong (khong bao gio commit .env that)
+.env
+.env.*
+!.env.example
+
+# IDE & OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log

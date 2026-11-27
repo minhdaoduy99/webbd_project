@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 interface CartItem {
   id: number | string;
@@ -68,7 +69,7 @@ export default function CartPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:8080/api/v1/public/orders", {
+      const res = await fetch(apiUrl("/api/v1/public/orders"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -3,6 +3,7 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 interface Item {
   id: number | string;
@@ -135,7 +136,7 @@ function DynamicCategoryContent() {
   useEffect(() => {
     async function loadApi() {
       try {
-        const res = await fetch("http://localhost:8080/api/v1/products");
+        const res = await fetch(apiUrl("/api/v1/public/products"));
         if (!res.ok) return;
         const raw = await res.json();
         const list = Array.isArray(raw) ? raw : raw.data || raw.content || [];

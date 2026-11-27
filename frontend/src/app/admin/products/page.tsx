@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import api from "@/lib/api";
+import api, { apiUrl } from "@/lib/api";
 
 interface Category {
   id: number;
@@ -53,7 +53,7 @@ interface ProductEditForm {
   variants: VariantEdit[];
 }
 
-const API_PUBLIC = "http://localhost:8080/api/v1/public";
+const API_PUBLIC = apiUrl("/api/v1/public");
 
 const PRICE_RANGES = [
   { label: "Tất cả mức giá", min: "", max: "" },

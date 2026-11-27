@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 export interface Product {
   id: number | string;
@@ -132,7 +133,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("http://localhost:8080/api/v1/public/products");
+        const res = await fetch(apiUrl("/api/v1/public/products"));
         if (!res.ok) return;
         const raw = await res.json();
         const list = Array.isArray(raw) ? raw : raw.data || raw.content || [];
@@ -159,11 +160,11 @@ export default function HomePage() {
       }
     }
     fetchProducts();
-    fetch("http://localhost:8080/api/v1/public/categories")
+    fetch(apiUrl("/api/v1/public/categories"))
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setCategories(Array.isArray(d) ? d : []))
       .catch(() => {});
-    fetch("http://localhost:8080/api/v1/public/brands")
+    fetch(apiUrl("/api/v1/public/brands"))
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setBrands(Array.isArray(d) ? d : []))
       .catch(() => {});
@@ -176,7 +177,7 @@ export default function HomePage() {
     setLoginMessage(null);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+      const response = await fetch(apiUrl("/api/v1/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -243,7 +244,7 @@ export default function HomePage() {
     setLoginMessage(null);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/auth/register", {
+      const response = await fetch(apiUrl("/api/v1/auth/register"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

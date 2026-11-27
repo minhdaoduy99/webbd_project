@@ -14,15 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -37,47 +38,55 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Lỗi: Email này đã được sử dụng!");
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        if (!StringUtils.hasText(email) || !StringUtils.hasText(request.getPassword()) || request.getPassword().length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email hợp lệ và mật khẩu tối thiểu 6 ký tự!"));
+        }
+        if (!StringUtils.hasText(request.getFullName())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng nhập họ và tên!"));
+        }
+        if (userRepository.existsByEmail(email)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email này đã được sử dụng!"));
         }
 
         User user = new User(
-                request.getEmail(),
+                email,
                 passwordEncoder.encode(request.getPassword()),
-                request.getFullName(),
+                request.getFullName().trim(),
                 request.getPhone(),
                 request.getAddress()
         );
 
-        Set<Role> roles = new HashSet<>();
         Role customerRole = roleRepository.findByName(ERole.ROLE_CUSTOMER)
-                .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy quyền ROLE_CUSTOMER trong CSDL!"));
-        roles.add(customerRole);
-        user.setRoles(roles);
-
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy quyền ROLE_CUSTOMER trong CSDL!"));
+        user.setRoles(Set.of(customerRole));
         userRepository.save(user);
 
-        return ResponseEntity.ok("Chúc mừng! Đăng ký tài khoản thành công!");
+        return ResponseEntity.ok(Map.of("message", "Đăng ký tài khoản thành công!"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
+        String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        if (!StringUtils.hasText(email) || !StringUtils.hasText(request.getPassword())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng nhập email và mật khẩu!"));
+        }
+
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(email, request.getPassword())
             );
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String jwt = jwtUtils.generateJwtToken(request.getEmail());
-
+            String canonicalEmail = authentication.getName();
+            String jwt = jwtUtils.generateJwtToken(canonicalEmail);
             List<String> roles = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(new AuthResponse(jwt, request.getEmail(), roles));
+                    .toList();
 
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Đăng nhập thất bại: " + e.getMessage());
+            return ResponseEntity.ok(new AuthResponse(jwt, canonicalEmail, roles));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Email hoặc mật khẩu không chính xác!"));
         }
     }
 }

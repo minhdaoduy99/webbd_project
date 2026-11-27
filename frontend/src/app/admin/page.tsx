@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import api from "@/lib/api";
+import api, { apiUrl } from "@/lib/api";
 
 interface ProductAlert {
   id: string | number;
@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
   const [brandStats, setBrandStats] = useState<{ name: string; count: number; stock: number }[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/public/products")
+    fetch(apiUrl("/api/v1/public/products"))
       .then((res) => res.json())
       .then((data) => {
         const list: any[] = Array.isArray(data)

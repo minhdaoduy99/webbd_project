@@ -3,6 +3,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 interface ProductVariant {
   id?: number | string;
@@ -99,7 +100,7 @@ function ProductDetailContent() {
     async function fetchDetail() {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/v1/public/products/${rawId}`);
+        const res = await fetch(apiUrl(`/api/v1/public/products/${rawId}`));
         if (res.ok) {
           const raw = await res.json();
           const d = raw?.data ?? raw;
@@ -252,7 +253,7 @@ function ProductDetailContent() {
                 const target = e.currentTarget;
                 if (!target.dataset.retried && product.image.startsWith("/")) {
                   target.dataset.retried = "1";
-                  target.src = `http://localhost:8080${product.image}`;
+                  target.src = apiUrl(product.image);
                 } else {
                   target.src = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900&q=80";
                 }

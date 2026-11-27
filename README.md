@@ -24,9 +24,9 @@
 - **Vai trò:** Giám sát chất lượng code toàn nhóm (Review & Merge PR), bảo mật hệ thống Auth/JWT, trực tiếp triển khai Hosting thực tế và hỗ trợ hoàn thiện báo cáo.
 - **Nhiệm vụ:**
   - [x] Hoàn thiện JWT Security, CORS, đồng bộ Docker khởi tạo tự động Database (`docker-compose.yml`).
-  - [ ] Viết `Dockerfile` cho `backend/` và `frontend/` để chạy toàn hệ thống bằng 1 lệnh `docker compose up -d --build`.
-  - [ ] Đưa cấu hình nhạy cảm (DB password, JWT Secret, API URL) sang biến môi trường `.env` thay vì hardcode `localhost`.
-  - [ ] Triển khai hệ thống lên **VPS Ubuntu + Nginx Reverse Proxy + SSL HTTPS (Certbot)** lấy tên miền thật phục vụ bảo vệ đồ án.
+  - [x] Viết `Dockerfile` cho `backend/` và `frontend/` để chạy toàn hệ thống bằng 1 lệnh `docker compose up -d --build`.
+  - [x] Đưa cấu hình nhạy cảm (DB password, JWT Secret, API URL) sang biến môi trường `.env` thay vì hardcode `localhost` (mẫu tại `.env.example`, cấu hình Nginx tại `deploy/nginx/webbd.conf`).
+  - [ ] Triển khai hệ thống lên **VPS Ubuntu + Nginx Reverse Proxy + SSL HTTPS (Certbot)** lấy tên miền thật phục vụ bảo vệ đồ án (đã có hướng dẫn chi tiết tại `deploy/DEPLOY.md`).
   - [ ] Hỗ trợ Thành viên 5 rà soát kịch bản demo & tài liệu báo cáo.
 
 ### 2. HÀO (Backend Developer)
